@@ -1,6 +1,7 @@
 # This is a basic VM Manager deployment template for the lacework agent.
 # It utilizes the lacework agent's 'install.sh' binary to deploy intelligently based upon the operating system detected
-# In this example, we deploy on all linux hosts located in us-east1 (South Carolina)
+# In this example, we deploy on all VM Manager supported linux hosts
+# as of 2020.04.19 per https://cloud.google.com/compute/docs/images/os-details#vm-manager
 
 assignment:
   zones: #leaving this empty will apply to all zones
@@ -19,5 +20,5 @@ recipes:
   - scriptRun:
       script: |-
         #!/bin/bash
-        agent_uri="https://lwint-se-mikelaramie.lacework.net/mgr/v1/download/2ce70843e1164c126231927e6633a1a7967822dc14b9fa5d059e921d/install.sh"
+        agent_uri="YOUR_INSTALL_SH_LINK_FROM_AGENTS_PAGE"
         sudo curl ${agent_uri} | sudo bash
