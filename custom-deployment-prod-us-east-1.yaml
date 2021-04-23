@@ -1,0 +1,37 @@
+# This is a basic VM Manager deployment template for the lacework agent.
+# It utilizes the lacework agent's 'install.sh' binary to deploy intelligently based upon the operating system detected
+# In this example, we deploy on all VM Manager supported linux hosts in us-east1 that are labeled "env: prod" and
+# add an "env: prod" label to the lacework agent config.json file
+
+assignment:
+  zones: 
+  - us-east1-b
+  - us-east1-c
+  - us-east1-d
+
+  osTypes:
+  - osShortName: centos
+  - osShortName: debian
+  - osShortName: rhel
+  - osShortName: sles
+  - osShortName: ubuntu
+
+  groupLabels:
+  - labels:
+      env: prod  
+
+packages:
+- name: "jq"  # We need jq to manipulate config.json
+  desiredState: INSTALLED
+
+recipes:
+- name: lw-agent-install
+  desiredState: INSTALLED
+  installSteps:
+  - scriptRun:
+      script: |-
+        #!/bin/bash
+        agent_uri="https://lwint-se-mikelaramie.lacework.net/mgr/v1/download/2ce70843e1164c126231927e6633a1a7967822dc14b9fa5d059e921d/install.sh"
+        sudo curl ${agent_uri} | sudo bash
+        jq '. + { "tags": { "env": "prod" } }' /var/lib/lacework/config/config.json > lwconfig.tmp && sudo mv lwconfig.tmp /var/lib/lacework/config/config.json
+        
